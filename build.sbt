@@ -7,7 +7,7 @@ lazy val dependencyManager =
         val scalaLoggingV = "3.9.2"
         val scalatestV = "3.0.8"
         //
-        val catsV = "2.0.0-RC2"
+        val catsV = "0.9.0" //"2.0.0-RC2"
         //
         val shapelessV = "2.3.3"
         //
@@ -20,6 +20,7 @@ lazy val dependencyManager =
         //
         val catsCore = "org.typelevel" %% "cats-core" % catsV
         val catsEffect = "org.typelevel" %% "cats-effect" % catsV
+        val catsFree = "org.typelevel" %% "cats-free" % catsV
         //
         val shapeless = "com.chuusai" %% "shapeless" % shapelessV
         //
@@ -30,8 +31,9 @@ lazy val dependencies = Seq(
     dependencyManager.scalatest % Test,
     dependencyManager.logback,
     dependencyManager.scalaLogging,
-    //dependencyManager.catsCore,
-    //dependencyManager.catsEffect,
+    dependencyManager.catsCore,
+    dependencyManager.catsEffect,
+    dependencyManager.catsFree,
     dependencyManager.shapeless,
     dependencyManager.eff
 )
