@@ -1,4 +1,4 @@
-// DEPENDENCIES
+// Common dependencies
 lazy val testing = Seq(
     "org.scalatest" %% "scalatest" % "3.0.8"
 )
@@ -12,12 +12,20 @@ lazy val logging ={
     )
 }
 
-lazy val effTagless = {
+lazy val shapeless = {
     val shapelessV = "2.3.3"
-    val EffV = "4.5.0"
     Seq(
-        "com.chuusai" %% "shapeless" % shapelessV,
-        "org.atnos" %% "eff" % EffV
+        "com.chuusai" %% "shapeless" % shapelessV
+    )
+}
+
+lazy val commonDependencies = testing.map(_ % Test) ++ logging ++ shapeless
+
+// Eff tagless
+lazy val effTagless = {
+    val effVersion = "4.5.0"
+    Seq(
+        "org.atnos" %% "eff" % effVersion
     )
 }
 
@@ -26,7 +34,7 @@ lazy val EffTaglessFinalExample = project
             name := "EffTaglessFinalExample",
             version := "0.1",
             scalaVersion := "2.12.9",
-            libraryDependencies ++= testing.map(_ % Test) ++ logging ++ effTagless,
+            libraryDependencies ++= commonDependencies ++ effTagless,
             scalacOptions ++= Seq(
                 "-language:higherKinds",
                 "-deprecation",
@@ -37,4 +45,35 @@ lazy val EffTaglessFinalExample = project
             ),
             addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
             //addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+        )
+
+// Cats tagless
+lazy val catsTagless = {
+    val catsVersion = "2.0.0-RC2"
+    val catsTaglessVersion = "0.9"
+    Seq(
+        "org.typelevel" %% "cats-core" % catsVersion,
+        "org.typelevel" %% "cats-effect" % catsVersion,
+        "org.typelevel" %% "cats-free" % catsVersion,
+        "org.typelevel" %% "cats-tagless-core" % catsTaglessVersion,
+        "org.typelevel" %% "cats-tagless-macros" % catsTaglessVersion
+    )
+}
+
+lazy val CatsTaglessFinalExample = project
+        .settings(
+            name := "CatsTaglessFinalExample",
+            version := "0.1",
+            scalaVersion := "2.12.9",
+            libraryDependencies ++= commonDependencies ++ catsTagless,
+            scalacOptions ++= Seq(
+                "-language:higherKinds",
+                "-deprecation",
+                "-encoding", "UTF-8",
+                "-feature",
+                "-language:_",
+                "-Ypartial-unification"
+            ),
+            addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4"),
+            addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
         )

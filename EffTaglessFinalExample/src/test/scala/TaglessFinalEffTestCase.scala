@@ -146,14 +146,14 @@ class TaglessFinalEffTestCase extends FlatSpec {
          * */
         object Service {
             /** 隐式参数实际上传入各自的 Eff interpreter 代理。 */
-            def registerAndLogin[F[_] : Monad](implicit authnDsl: AuthDsl[F], emailDsl: EmailDsl[F]): F[Either[AuthError, User]] = {
+            def registerAndLogin[F[_] : Monad](implicit authDsl: AuthDsl[F], emailDsl: EmailDsl[F]): F[Either[AuthError, User]] = {
                 val email = tag[EmailAddress]("john@doe.com")
                 val password = "swordfish"
 
                 for {
-                    _ <- authnDsl.register(email, password)
+                    _ <- authDsl.register(email, password)
                     _ <- emailDsl.send(email, "Hello", "Thank you for registering")
-                    authenticated <- authnDsl.auth(email, password)
+                    authenticated <- authDsl.auth(email, password)
                 } yield authenticated
             }
         }
