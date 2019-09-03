@@ -180,7 +180,9 @@ class TaglessFinalEffTestCase extends FlatSpec {
         /**
          * Bug: 因为 Eff 还是基于 Cats 0.9 版本. 1.0 以后的版本 Cartesian 已经更名为 Semigroupal, 因此如果指定高版本 Cats
          * 会遇到以下错误：
+         *
          *     java.lang.ClassNotFoundException: cats.Cartesian
+         *
          * 所以最好从 build.sbt 中删除对 Cats 的配置，让 Eff 缺省加载．
          * */
         val res = _comp
