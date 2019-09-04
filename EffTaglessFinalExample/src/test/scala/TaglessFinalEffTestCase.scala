@@ -100,14 +100,14 @@ class TaglessFinalEffTestCase extends FlatSpec {
              * 现在，我们要为 AuthDsl 准备的容器 UserRepositoryState（F）属于 R 提供一个证明. 我们可以利用 context bound，将这个
              * 证明声明为类型参数：
              * */
-            type _userRepositoryState[R] = UserRepositoryState |= R
+            type _UserRepositoryState[R] = UserRepositoryState |= R
 
             /**
              * 3）
              * effDslInterpreter 通过将 _userRepositoryState 声明为 context bound 来使之成为隐式．并且它还将返回的 effInterpreter
              * 也声明为隐式以便编译器动态选择。
              */
-            implicit def effDslInterpreter[R: _userRepositoryState]: AuthDsl[Eff[R, ?]] =
+            implicit def effDslInterpreter[R: _UserRepositoryState]: AuthDsl[Eff[R, ?]] =
                 effInterpreter[R, UserRepositoryState](dslInterpreter)
         }
 
@@ -131,14 +131,20 @@ class TaglessFinalEffTestCase extends FlatSpec {
                         Writer.tell(Email(to, subject, body))
                 }
 
+            /**
+             * 实现代理
+             * */
             private def effInterpreter[R, F[_]](interpreter: EmailDsl[F]) (implicit evidence: F |= R): EmailDsl[Eff[R, ?]] = new EmailDsl[Eff[R, ?]] {
                     override def send(to: @@[String, EmailAddress], subject: String, body: String): Eff[R, Unit] =
                         Eff.send(interpreter.send(to, subject, body))
                 }
 
-            type _mailQueue[R] = EMailWriter |= R
+            /**
+             * 将 EMailWriter 加入堆叠并声明代理为隐式.
+             * */
+            type _EMailWriter[R] = EMailWriter |= R
 
-            implicit def effWriterInterpreter[R : _mailQueue]: EmailDsl[Eff[R, ?]] = effInterpreter[R, EMailWriter](emailInterpreter)
+            implicit def effWriterInterpreter[R : _EMailWriter]: EmailDsl[Eff[R, ?]] = effInterpreter[R, EMailWriter](emailInterpreter)
         }
 
         /**
@@ -151,7 +157,7 @@ class TaglessFinalEffTestCase extends FlatSpec {
                 val password = "swordfish"
 
                 for {
-                    _ <- authDsl.register(email, password)
+                    user <- authDsl.register(email, password)
                     _ <- emailDsl.send(email, "Hello", "Thank you for registering")
                     authenticated <- authDsl.auth(email, password)
                 } yield authenticated
