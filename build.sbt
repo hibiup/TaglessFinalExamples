@@ -25,47 +25,63 @@ lazy val commonDependencies = testing.map(_ % Test) ++ logging ++ shapeless
 lazy val effTagless = {
     val effVersion = "4.5.0"
     Seq(
-        "org.atnos" %% "eff" % effVersion
+        "org.atnos" %% "eff" % effVersion excludeAll(ExclusionRule(organization = "org.typelevel"))
     )
+}
+
+// Cats tagless
+lazy val cats = {
+    Seq(
+        "org.typelevel" %% "cats-core",
+        "org.typelevel" %% "cats-kernel",
+        "org.typelevel" %% "cats-macros"
+    )
+}
+
+lazy val catsEffect = Seq(
+  "org.typelevel" %% "cats-effect"
+)
+
+lazy val catsFree = Seq(
+  "org.typelevel" %% "cats-free"
+)
+
+lazy val catsTagless = {
+  val catsTaglessVersion = "0.9"
+  Seq(
+    "org.typelevel" %% "cats-tagless-core" % catsTaglessVersion,
+    "org.typelevel" %% "cats-tagless-macros" % catsTaglessVersion
+  )
 }
 
 lazy val EffTaglessFinalExample = project
-        .settings(
-            name := "EffTaglessFinalExample",
-            version := "0.1",
-            scalaVersion := "2.12.9",
-            libraryDependencies ++= commonDependencies ++ effTagless,
-            scalacOptions ++= Seq(
-                "-language:higherKinds",
-                "-deprecation",
-                "-encoding", "UTF-8",
-                "-feature",
-                "-language:_",
-                "-Ypartial-unification"
-            ),
-            addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
-            //addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
-        )
-
-// Cats tagless
-lazy val catsTagless = {
-    val catsVersion = "2.0.0-RC2"
-    val catsTaglessVersion = "0.9"
-    Seq(
-        "org.typelevel" %% "cats-core" % catsVersion,
-        "org.typelevel" %% "cats-effect" % catsVersion,
-        "org.typelevel" %% "cats-free" % catsVersion,
-        "org.typelevel" %% "cats-tagless-core" % catsTaglessVersion,
-        "org.typelevel" %% "cats-tagless-macros" % catsTaglessVersion
-    )
-}
+  .settings(
+    name := "EffTaglessFinalExample",
+    version := "0.1",
+    scalaVersion := "2.12.9",
+    libraryDependencies ++= commonDependencies
+      ++ cats.map(_ % "0.9.0")
+      ++ effTagless,
+    scalacOptions ++= Seq(
+      "-language:higherKinds",
+      "-deprecation",
+      "-encoding", "UTF-8",
+      "-feature",
+      "-language:_",
+      "-Ypartial-unification"
+    ),
+    addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
+    //addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+  )
 
 lazy val CatsTaglessFinalExample = project
         .settings(
             name := "CatsTaglessFinalExample",
             version := "0.1",
             scalaVersion := "2.12.9",
-            libraryDependencies ++= commonDependencies ++ catsTagless,
+            libraryDependencies ++= commonDependencies
+              ++ (cats ++ catsEffect ++ catsFree).map(_ % "2.0.0-RC2")
+              ++ catsTagless,
             scalacOptions ++= Seq(
                 "-language:higherKinds",
                 "-deprecation",
