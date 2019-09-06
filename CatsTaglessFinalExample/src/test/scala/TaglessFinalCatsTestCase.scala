@@ -132,15 +132,15 @@ class TaglessFinalCatsTestCase extends FlatSpec{
          * 与 State 不同，当我们处理 Writer 的时候需要一些额外的步骤：
          * */
         sealed trait EmailAddress
-        final case class Email(to: String, subject: String, body: String)
+        final case class Email(to: String @@ EmailAddress, subject: String, body: String)
 
-        trait NotifyDsl[F[_]] {
-            def send(to: String, subject: String, body: String): F[Unit]
+        trait EmailDsl[F[_]] {
+            def send(to: String @@ EmailAddress, subject: String, body: String): F[Unit]
         }
 
         object EmailDsl {
             type EMailWriter[A] = WriterT[IO, Email, A]
-            implicit val notifyInterpreter: NotifyDsl[EMailWriter] = (to: String, subject: String, body: String) =>
+            implicit val notifyInterpreter: EmailDsl[EMailWriter] = (to: String @@ EmailAddress, subject: String, body: String) =>
                 WriterT.tell(Email(to, subject, body))
 
             /**
@@ -155,7 +155,7 @@ class TaglessFinalCatsTestCase extends FlatSpec{
                  * 环境，因此 Cats 能够帮我们自动生成，但是我们无法将参数通过 run 传递给 Writer（我们无法传入并不等于 Writer
                  * 无法取得，参考 flatMap 的说明），因此 Cats 无法自动生成 Monad[Writer] 而要我们手工实现。
                  * */
-                override def pure[A](a: A): EMailWriter[A] = WriterT(IO(Email("empty", "", ""), a))  // 手工生成 Empty 值
+                override def pure[A](a: A): EMailWriter[A] = WriterT(IO(Email(tag[EmailAddress]("Empty"), "", ""), a))  // 手工生成 Empty 值
                 /**
                  * 除了依靠 pure 生成 Empty（环境），我们还要考虑新旧环境值合并的问题，State 的做法将旧的环境值传给用户，然后由用
                  * 户决定如何实现合并。前面说过虽然不能向 Writer 传递环境值（比如 Empty）但是并不等于 Writer 无法处理环境值。如果
@@ -179,8 +179,8 @@ class TaglessFinalCatsTestCase extends FlatSpec{
         }
 
         object Service {
-            def emailNotify[F[_]: Monad](implicit notifyDsl: NotifyDsl[F]): F[Unit] = {
-                val email = "john@doe.com"
+            def emailNotify[F[_]: Monad](implicit notifyDsl: EmailDsl[F]): F[Unit] = {
+                val email = tag[EmailAddress]("john@doe.com")
                 for {
                     _ <- notifyDsl.send(email, "Hello", "Thank you for registering")
                 } yield ()
