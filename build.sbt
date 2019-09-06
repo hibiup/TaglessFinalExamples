@@ -34,7 +34,7 @@ lazy val EffTaglessFinalExample = project
             name := "EffTaglessFinalExample",
             version := "0.1",
             scalaVersion := "2.12.9",
-            libraryDependencies ++= commonDependencies ++ effTagless,
+            libraryDependencies ++= commonDependencies ++ effTagless /*++ cats.map(_ % "0.9.0") ++ catsEffect.map(_ % "0.9")*/,
             scalacOptions ++= Seq(
                 "-language:higherKinds",
                 "-deprecation",
@@ -48,15 +48,29 @@ lazy val EffTaglessFinalExample = project
         )
 
 // Cats tagless
+lazy val cats = {
+    Seq(
+        "org.typelevel" %% "cats-core",
+        "org.typelevel" %% "cats-free"
+    )
+}
+
+lazy val catsEffect = Seq(
+    "org.typelevel" %% "cats-effect"
+)
+
 lazy val catsTagless = {
-    val catsVersion = "2.0.0-RC2"
     val catsTaglessVersion = "0.9"
     Seq(
-        "org.typelevel" %% "cats-core" % catsVersion,
-        "org.typelevel" %% "cats-effect" % catsVersion,
-        "org.typelevel" %% "cats-free" % catsVersion,
         "org.typelevel" %% "cats-tagless-core" % catsTaglessVersion,
         "org.typelevel" %% "cats-tagless-macros" % catsTaglessVersion
+    )
+}
+
+lazy val catsMtl = {
+    val catsMtlVersion = "0.6.0"
+    Seq(
+        "org.typelevel" %% "cats-mtl-core" % catsMtlVersion
     )
 }
 
@@ -65,7 +79,7 @@ lazy val CatsTaglessFinalExample = project
             name := "CatsTaglessFinalExample",
             version := "0.1",
             scalaVersion := "2.12.9",
-            libraryDependencies ++= commonDependencies ++ catsTagless,
+            libraryDependencies ++= commonDependencies ++ catsEffect.map(_ % "0.6") ++ cats.map(_ % "1.6.0") ++ catsTagless ++ catsMtl,
             scalacOptions ++= Seq(
                 "-language:higherKinds",
                 "-deprecation",
@@ -74,6 +88,6 @@ lazy val CatsTaglessFinalExample = project
                 "-language:_",
                 "-Ypartial-unification"
             ),
-            addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4"),
+            addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.6"),
             addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
         )
