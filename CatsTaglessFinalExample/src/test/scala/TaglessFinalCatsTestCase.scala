@@ -2,7 +2,7 @@ import cats.arrow.FunctionK
 import cats.{Comonad, Monad, Semigroup, ~>}
 import org.scalatest.FlatSpec
 import cats.implicits._
-import cats.data.{StateT, Writer, WriterT}
+import cats.data.{EitherK, StateT, Writer, WriterT}
 import cats.effect.IO
 import cats.tagless.autoFunctorK
 import shapeless.tag
@@ -40,6 +40,7 @@ class TaglessFinalCatsTestCase extends FlatSpec{
         object AuthDsl {
             type UserRepository = List[User]
             type UserRepositoryState[A] = StateT[IO, UserRepository, A]
+
             /**
              * 实现 interpreter，和 Eff 的例子差不多，但是必须声明为隐式。
              * */
@@ -140,6 +141,7 @@ class TaglessFinalCatsTestCase extends FlatSpec{
 
         object EmailDsl {
             type EMailWriter[A] = WriterT[IO, Email, A]
+
             implicit val notifyInterpreter: EmailDsl[EMailWriter] = (to: String @@ EmailAddress, subject: String, body: String) =>
                 WriterT.tell(Email(to, subject, body))
 
