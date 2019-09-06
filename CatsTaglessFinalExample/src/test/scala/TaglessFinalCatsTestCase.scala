@@ -232,7 +232,7 @@ class TaglessFinalCatsTestCase extends FlatSpec{
                  * 我们将 A 装入了 IO，因此此时我们需要执行IO，才能执行 A.
                  * */
                 override def extract[A](x: EMailWriter[A]): A = x.run.unsafeRunSync()._2
-                override def coflatMap[A, B](fa: EMailWriter[A])(f: EMailWriter[A] => B): EMailWriter[B] = ???
+                override def coflatMap[A, B](fa: EMailWriter[A])(f: EMailWriter[A] => B): EMailWriter[B] = fa.coflatMap(f)
                 override def map[A, B](fa: EMailWriter[A])(f: A => B): EMailWriter[B] = fa.map(a => f(a))
             }
         }
