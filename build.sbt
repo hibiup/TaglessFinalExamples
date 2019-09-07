@@ -23,7 +23,7 @@ lazy val commonDependencies = testing.map(_ % Test) ++ logging ++ shapeless
 
 // Eff tagless
 lazy val effTagless = {
-    val effVersion = "4.5.0"
+    val effVersion = "5.5.0"
     Seq(
         "org.atnos" %% "eff" % effVersion excludeAll(ExclusionRule(organization = "org.typelevel"))
     )
@@ -60,7 +60,7 @@ lazy val EffTaglessFinalExample = project
     version := "0.1",
     scalaVersion := "2.12.9",
     libraryDependencies ++= commonDependencies
-      ++ cats.map(_ % "0.9.0")
+      ++ cats.map(_ % "2.0.0-RC2")
       ++ effTagless,
     scalacOptions ++= Seq(
       "-language:higherKinds",
@@ -73,6 +73,13 @@ lazy val EffTaglessFinalExample = project
     addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
     //addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
   )
+
+lazy val catsMtl = {
+    val catsMtlVersion = "0.6.0"
+    Seq(
+        "org.typelevel" %% "cats-mtl-core" % catsMtlVersion
+    )
+}
 
 lazy val CatsTaglessFinalExample = project
         .settings(
@@ -90,6 +97,6 @@ lazy val CatsTaglessFinalExample = project
                 "-language:_",
                 "-Ypartial-unification"
             ),
-            addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4"),
+            addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.6"),
             addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
         )
